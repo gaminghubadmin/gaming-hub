@@ -18,7 +18,7 @@ import { useWalletStore } from "../../store/walletStore";
 import { notifyWalletChanged } from "../../services/api/practiceReward";
 import { cn } from "../../lib/utils";
 
-export const COUPON_BUY_URL = "https://coupon-frontend-e8b3.onrender.com";
+export const COUPON_BUY_URL = "https://coupon-frontend-e8b3.onrender.com/dashboard/marketplace/coupon/5548d778-ab37-4870-bf2b-3a7144efa347";
 
 export interface RedeemCouponModalProps {
   isOpen: boolean;

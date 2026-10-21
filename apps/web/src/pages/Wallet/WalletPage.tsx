@@ -168,7 +168,7 @@ export function WalletPage() {
             </button>
 
             <a
-              href="https://coupon-frontend-e8b3.onrender.com"
+              href="https://coupon-frontend-e8b3.onrender.com/dashboard/marketplace/coupon/5548d778-ab37-4870-bf2b-3a7144efa347"
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-3 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 hover:text-amber-200 font-bold text-sm backdrop-blur-md transition-all hover:scale-105 duration-200 flex items-center gap-2"
