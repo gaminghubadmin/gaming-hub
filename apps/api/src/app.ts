@@ -120,7 +120,9 @@ export function buildApp() {
     origin: getAllowedCorsOrigin(),
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Authorization", "Content-Type", "X-Internal-Key", "X-Requested-With", "X-App-Version", "X-App-Platform"],
+    // Internal service credentials must never be allowed in browser requests.
+    // Server-to-server requests do not use CORS preflights.
+    allowedHeaders: ["Authorization", "Content-Type", "X-Requested-With", "X-App-Version", "X-App-Platform"],
   });
 
   void app.register(rateLimit, {
