@@ -9,7 +9,7 @@ import { isNativePlatform, getPlatform } from "../native/platform";
  */
 export function getApiUrl(): string {
   if (isNativePlatform()) {
-    return (import.meta.env.VITE_API_URL as string | undefined)?.trim() || "https://gaming-hub-zqv0.onrender.com/api";
+    return (import.meta.env.VITE_API_URL as string | undefined)?.trim() || "https://gaming-hub-clms.onrender.com/api";
   }
   const envUrl = (import.meta.env.VITE_API_URL as string | undefined)?.trim();
   if (envUrl && /^https?:\/\//i.test(envUrl) && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {

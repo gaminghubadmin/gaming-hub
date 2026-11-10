@@ -9,7 +9,7 @@ import { isNativePlatform } from "../native/platform";
  */
 export function getSocketUrl(): string {
   if (isNativePlatform()) {
-    return (import.meta.env.VITE_SOCKET_URL as string | undefined)?.trim() || "https://gaming-hub-socket.onrender.com";
+    return (import.meta.env.VITE_SOCKET_URL as string | undefined)?.trim() || "https://gaming-hub-socket-4ovb.onrender.com";
   }
   const envUrl = (import.meta.env.VITE_SOCKET_URL as string | undefined)?.trim();
   if (envUrl && /^https?:\/\//i.test(envUrl) && !envUrl.includes("localhost") && !envUrl.includes("127.0.0.1")) {

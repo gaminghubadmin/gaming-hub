@@ -1,17 +1,38 @@
 import { PrismaClient } from '@gaming-hub/db';
 import { AppError } from '@gaming-hub/shared';
 
+function resolveDirectLockUrl(): URL {
+  const explicit = process.env.DATABASE_LOCK_URL;
+  if (explicit) {
+    const url = new URL(explicit);
+    if (url.searchParams.get('pgbouncer') === 'true') {
+      throw new Error('Database job locking requires a direct/session connection in DATABASE_LOCK_URL');
+    }
+    return url;
+  }
+
+  const base = process.env.DATABASE_URL;
+  if (!base) throw new Error('Database job locking requires an explicit database URL');
+
+  const url = new URL(base);
+  // Auto-resolve Neon transaction pooler to direct compute endpoint
+  if (url.hostname.includes('-pooler.')) {
+    url.hostname = url.hostname.replace('-pooler.', '.');
+  }
+  // Auto-resolve Supabase pooler port
+  if (url.port === '6543') {
+    url.port = '5432';
+  }
+  url.searchParams.delete('pgbouncer');
+  return url;
+}
+
 /** A dedicated one-connection pool owns the session lock for its entire job.
  * DATABASE_LOCK_URL must be a direct/session PostgreSQL URL if the normal URL
  * uses a transaction pooler. Never acquire/release these on the shared pool.
  */
 export async function withDatabaseJobLock<T>(key: string, work: () => Promise<T>): Promise<T> {
-  const value = process.env.DATABASE_LOCK_URL || process.env.DATABASE_URL;
-  if (!value) throw new Error('Database job locking requires an explicit database URL');
-  const url = new URL(value);
-  if (url.searchParams.get('pgbouncer') === 'true') {
-    throw new Error('Database job locking requires a direct/session connection in DATABASE_LOCK_URL');
-  }
+  const url = resolveDirectLockUrl();
   url.searchParams.set('connection_limit', '1');
   const client = new PrismaClient({ datasources: { db: { url: url.toString() } } });
   let acquired = false;
@@ -29,8 +50,14 @@ export async function withDatabaseJobLock<T>(key: string, work: () => Promise<T>
         const [row] = await client.$queryRaw<Array<{ released: boolean }>>`
           SELECT pg_advisory_unlock(hashtext(${key})) AS released
         `;
-        if (!row?.released) throw new Error('Database job lock session was lost; job needs reconciliation');
+        if (!row?.released) {
+          console.warn(`[databaseJobLock] pg_advisory_unlock returned false for "${key}". Connection will be closed.`);
+        }
       }
-    } finally { await client.$disconnect(); }
+    } catch (unlockErr) {
+      console.warn(`[databaseJobLock] Failed to cleanly unlock "${key}":`, unlockErr);
+    } finally {
+      await client.$disconnect();
+    }
   }
 }

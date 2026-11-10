@@ -60,7 +60,7 @@ describe("getApiUrl and getSocketUrl routing", () => {
     vi.mocked(isNativePlatform).mockReturnValue(true);
     vi.stubEnv("VITE_API_URL", "");
     vi.stubEnv("VITE_SOCKET_URL", "");
-    expect(getApiUrl()).toBe("https://gaming-hub-zqv0.onrender.com/api");
-    expect(getSocketUrl()).toBe("https://gaming-hub-socket.onrender.com");
+    expect(getApiUrl()).toBe("https://gaming-hub-clms.onrender.com/api");
+    expect(getSocketUrl()).toBe("https://gaming-hub-socket-4ovb.onrender.com");
   });
 });
